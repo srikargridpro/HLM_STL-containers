@@ -57,28 +57,36 @@ private:
         { 
             std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
+            #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
             std::cout << "Created New Vector with ID = " << GlobalCount() << "\n"; 
+            #endif
         }
         
         Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(externalVector)), count(1) 
         { 
             std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
+            #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
             std::cout << "Created New Vector with ID = " << GlobalCount() << "\n"; 
+            #endif
         }
 
         Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(externalVector)), count(1) 
         { 
             std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
+            #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
             std::cout << "Created New Vector with ID = " << GlobalCount() << "\n"; 
+            #endif
         }
  
         // Delete the std::vector<T>* vector 
        ~Data() 
         {
            --GlobalCount();
+           #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
            std::cout << "Deleted Vector with ID =  " << UUID << "\n";            
+           #endif
            delete vector;
         }
     };
@@ -272,12 +280,12 @@ public:
 
     // Equality operator
     bool operator==(const Vector& other) const {
-        return (data_ == other.data_);
+        return (m_data_ == other.data_);
     }
 
     // Inequality operator
     bool operator!=(const Vector& other) const {
-        return !(*this == other);
+        return !(m_data_ == other.m_data_);
     }
 
     // Overload + operator for concatenation
