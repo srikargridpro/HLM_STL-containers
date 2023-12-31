@@ -550,9 +550,9 @@ public:
     }
 
     // Swap external vector with internal
-    void swap(const Vector<T>& externalVector)
+    void swap(const Vector& externalVector)
     {
-        const Data<T>* temp = this->data_;
+        const Data* temp = this->data_;
         this->data = externalVector.data_;
         externalVector.data_ =  temp;
     }
