@@ -112,13 +112,14 @@ protected:
 
     // Release the data
     void release_reference() {
-        if (data_) {
+        if (data_ != nullptr) {
             --data_->count;
             if (data_->count == 0) {
                 delete data_;
             }
-            data_ = nullptr;
         }
+        // release the data
+        data_ = nullptr;
     }
 
     // Private address-of operator with no implementation
