@@ -55,33 +55,38 @@ protected:
 
         Data() : vector(new std::vector<T>()), count(1) 
         { 
+            std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
             std::cout << "Created New Vector with ID = " << GlobalCount() << "\n"; 
         }
         
         Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(externalVector)), count(1) 
         { 
+            std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
             std::cout << "Created New Vector with ID = " << GlobalCount() << "\n"; 
         }
 
         Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(externalVector)), count(1) 
         { 
+            std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
             std::cout << "Created New Vector with ID = " << GlobalCount() << "\n"; 
         }
-
-        ~Data() 
+ 
+        // Delete the std::vector<T>* vector 
+       ~Data() 
         {
-            (--GlobalCount());
-            std::cout << "Deleted Vector with ID =  " << UUID << "\n";            
-            delete vector;
+           --GlobalCount();
+           std::cout << "Deleted Vector with ID =  " << UUID << "\n";            
+           delete vector;
         }
     };
 
     // Caution : Not meant for external use
     Data* data_;
 
+    // Caution : Not meant for external use
     void delete_vector() {
         try {
         if (data_ != nullptr) {
@@ -122,10 +127,10 @@ protected:
         data_ = nullptr;
     }
 
-    // Private address-of operator with no implementation
+   // Protect address-of operator with no implementation
     T* operator&();
 
-    // Private reference operator and address-of operator
+    // Protect reference operator and address-of operator
     T& operator*();
     const T& operator*() const;
     T* operator->();
@@ -141,13 +146,7 @@ protected:
     void* operator new(std::size_t);
     void  operator delete(void*);
 
-public:
-
-    // Public alternative constructors or methods
-    static Vector<T> createVector() {
-        return Vector<T>();
-    }
-    
+public:    
     // Crititcal functionality !!! Do not modify 
     // check validity
     bool is_valid() const
@@ -168,24 +167,32 @@ public:
         return data_->count;
     }
     
+    const size_t ref_count() const
+    {
+        return data_->count;
+    }
+
     size_t data_id()
     {
         return data_->UUID;
     }
 
+    const size_t data_id() const
+    {
+        return data_->UUID;
+    }
+
     // Constructor
-    Vector() : data_(new Data()) {std::atexit(Data::checkGlobalCount);}
+    Vector() : data_(new Data()) {}
 
     #define HLM_MOVE 1
     #define HLM_COPY 0
 
-    Vector(const std::vector<T>&& externalVector, const bool& move_semantic = HLM_MOVE) : data_(new Data()) 
+    Vector(const std::vector<T>&& externalVector, const bool& move_semantic = HLM_MOVE)
     {
-        std::atexit(Data::checkGlobalCount);
         if(move_semantic == HLM_COPY)
         {
            data_ = new Data(externalVector);
-          //*(data_->vector) = (externalVector);
         }
         else
         {
@@ -196,11 +203,9 @@ public:
 
     Vector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE)   
     {
-        std::atexit(Data::checkGlobalCount);
         if(move_semantic == HLM_COPY)
         {
            data_ = new Data(externalVector);
-          //*(data_->vector) = (externalVector);
         }
         else
         {
@@ -341,12 +346,33 @@ public:
         }
     }
 
-    // Get the size of the vector
-    T& back() const {
+    // Get data ie... the first element
+    const T* data() const {
+        return (is_valid() && size()) ? &(*(data_->vector))[0]  : &(DefaultValue());
+    }
+
+    // Get data ie... the first element
+    T* data() {
+        return (is_valid() && size()) ? &(*(data_->vector))[0]  : &(DefaultValue());
+    }
+
+    // Get the last element of the vector
+    T& back() {
         return (is_valid() && size()) ? data_->vector->back()  : DefaultValue();
     }
 
-    T& front() const {
+    // Get the last element of the vector
+    const T& back() const {
+        return (is_valid() && size()) ? data_->vector->back()  : DefaultValue();
+    }
+
+    // Get the front element of the vector
+    T& front() {
+        return (is_valid() && size()) ? data_->vector->front() : DefaultValue();
+    }
+
+    // Get const version of the const element of the vector
+    const T& front() const {
         return (is_valid() && size()) ? data_->vector->front() : DefaultValue();
     }
 
