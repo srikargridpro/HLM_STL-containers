@@ -172,12 +172,12 @@ public:
         return m_data_->count;
     }
 
-    size_t m_data_id()
+    size_t data_id()
     {
         return m_data_->UUID;
     }
 
-    const size_t m_data_id() const
+    const size_t data_id() const
     {
         return m_data_->UUID;
     }
