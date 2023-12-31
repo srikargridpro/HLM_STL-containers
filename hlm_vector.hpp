@@ -618,6 +618,12 @@ public:
 };
 
 } // namespace HLM
+ 
+/*
+
+/////////////////////////////////////////////////////////////
+Tests & Demos
+/////////////////////////////////////////////////////////////
 
 // MultiplyFunctor implementation
 template <typename T>
@@ -650,7 +656,7 @@ HLM::Vector<int> tester()
     HLM::Vector<int> x = std::vector<int>{99, 98, 97};
     return x;
 }
-/*
+
 int main() {
 
     // Tests and demo
