@@ -147,6 +147,9 @@ private:
     void  operator delete(void*);
 
 public:    
+////////////////////////////////////////////////////////////////////////////////////////
+////////  Smart & Safety check functions //////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////  
     // Crititcal functionality !!! Do not modify 
     // check validity
     bool is_valid() const
@@ -160,6 +163,12 @@ public:
           throw std::runtime_error("Accessing null or released vector"); 
           return false;  
          }
+    }
+    
+    static T& DefaultValue()
+    {  
+      static T default_value;
+      return default_value; 
     }
 
     size_t ref_count()
@@ -181,6 +190,11 @@ public:
     {
         return m_data_->UUID;
     }
+
+///////////////////////////////////////////////////////////////////////////////////////
+///// Fancy Ways to Construct vector data with interoperability with std::vector //////
+////  Default Preference for Move Semantic !!!!!!! ////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
 
     // Constructor
     Vector() : m_data_(new Data()) {}
@@ -232,11 +246,9 @@ public:
         release_reference();
     }
 
-    static T& DefaultValue()
-    {  
-      static T default_value;
-      return default_value; 
-    }
+/////////////////////////////////////////////////////////////////////////////////////
+///// Public Operators 
+////////////////////////////////////////////////////////////////////////////////////
 
     // Assignment operator from external vector using move semantics
     const Vector& operator=(const std::vector<T>&& externalVector) {
@@ -257,6 +269,16 @@ public:
         ++(this->m_data_->count); 
         return *this;
     } 
+
+    // Equality operator
+    bool operator==(const Vector& other) const {
+        return (data_ == other.data_);
+    }
+
+    // Inequality operator
+    bool operator!=(const Vector& other) const {
+        return !(*this == other);
+    }
 
     // Overload + operator for concatenation
     Vector operator+(const Vector& other) const {
@@ -344,6 +366,9 @@ public:
            return DefaultValue();
         }
     }
+//////////////////////////////////////////////////////////////////////////////////////////
+/////////// Wrapper functions around std::vector member functions
+/////////////////////////////////////////////////////////////////////////////////////////
 
     // Get data ie... the first element
     const T* data() const {
@@ -482,6 +507,10 @@ public:
         }
     }
 
+////////////////////////////////////////////////////////////////////
+////////// Fancy Functions  ///////////////////////////////////////
+///////////////////////////////////////////////////////////////////
+
     // Broadcast a value to all elements in the vector
     void broadcast(const T& value) {
         if (is_valid()) {
@@ -615,7 +644,9 @@ public:
             std::cout << "Vector is null or released." << "\n" ;
         }
     }
-};
+
+/////////////////////////////////////////////////////////////////////////////
+}; // class Vector End
 
 } // namespace HLM
  
