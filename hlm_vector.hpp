@@ -155,7 +155,7 @@ public:
     // check validity
     bool is_valid() const
     {
-         if(data_ != nullptr && data_->vector != nullptr  && (data_->count) != 0 ) 
+         if(data_ != nullptr && data_->vector != nullptr  && (data_->count) >= 0 ) 
          {
             return true;
          }
