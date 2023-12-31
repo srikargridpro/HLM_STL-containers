@@ -299,14 +299,14 @@ public:
         }
     }
 
-    // Access element at index (allowing negative indices for reverse access)
+    // Access element at index
     T& operator[](const size_t index) {
         if (is_valid()) {
-            if (index >= 0 && (index) < data_->vector->size()) {
+            if ((index) < data_->vector->size()) {
                 return (*data_->vector)[(index)];
             }
             else {
-                std::cerr << "\nWarning : Index " << index << " out of bound. Returning default value \n";
+                std::cerr << "\nWarning : Index " << index << " out of bound. Returning back or default value \n";
                 return back(); 
             }
         }
