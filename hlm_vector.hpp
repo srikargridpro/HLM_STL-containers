@@ -165,6 +165,12 @@ public:
     {
         return data_->count;
     }
+    
+    size_t data_id()
+    {
+        return data_->UUID;
+    }
+
     // Constructor
     Vector() : data_(new Data()) {std::atexit(Data::checkGlobalCount);}
 
