@@ -223,8 +223,7 @@ public:
          }
          else 
          {
-            Data defaultdata;
-            (*this->m_data_) = (externalVector.is_valid()) ? (*(externalVector.m_data_)) : defaultdata ;  
+             m_data_ = (new Data((*externalVector.m_data_->vector)));
          }      
     }            
 
@@ -242,13 +241,13 @@ public:
     // Assignment operator from external vector using move semantics
     const Vector& operator=(const std::vector<T>&& externalVector) {
         delete_vector();
-        *(m_data_->vector) = std::move(externalVector);
+        (m_data_->vector) = new std::vector<T>(std::move(externalVector));
         return *this;
     }
 
     const Vector& operator=(const std::vector<T>& externalVector) {
         delete_vector();
-        m_data_->vector = new std::vector<T>(std::move(externalVector));
+        (m_data_->vector) = new std::vector<T>(std::move(externalVector));
         return *this;
     } 
 
@@ -619,3 +618,35 @@ public:
 };
 
 } // namespace HLM
+
+// MultiplyFunctor implementation
+template <typename T>
+class MultiplyFunctor : public HLM::ReduceFunctor<T> {
+public:
+    T operator()(const T& acc, const T& element) const override {
+        return acc * element;
+    }
+};
+
+// AddFunctor implementation (example of another functor)
+template <typename T>
+class AddFunctor : public HLM::ReduceFunctor<T> {
+public:
+    T operator()(const T& acc, const T& element) const override {
+        return (acc + element + val);
+    }
+    
+    T val;
+};
+
+class replacer : public HLM::BroadcastFunctor<int> {
+public:
+     void operator()(int& element) override { element = val; }
+     int val;
+};
+
+HLM::Vector<int> tester()
+{
+    HLM::Vector<int> x = std::vector<int>{99, 98, 97};
+    return x;
+}
