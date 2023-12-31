@@ -124,6 +124,16 @@ protected:
     // Private address-of operator with no implementation
     T* operator&();
 
+    // Private reference operator and address-of operator
+    T& operator*();
+    const T& operator*() const;
+    T* operator->();
+    const T* operator->() const;
+
+    // Delete operator new and operator delete
+    void* operator new(std::size_t) = delete;
+    void  operator delete(void*) = delete;
+
 public:
 
     // Public alternative constructors or methods
@@ -500,6 +510,27 @@ public:
             std::sort(data_->vector->begin(), data_->vector->end());
             data_->vector->erase(std::unique(data_->vector->begin(), data_->vector->end()), data_->vector->end());
         }
+    }
+
+    void swap(const Vector& externalVector)
+    {
+        const Data* temp = this->data_;
+        this->data = externalVector.data_;
+        externalVector.data_ =  temp;
+    }
+
+    void swap(const std::vector<T>& externalVector)
+    {
+        std::vector<T> temp = std::move(this->data_->vector);
+        this->data_->vector = std::move(externalVector.data_->vector);
+        externalVector.data_ =  std::move(temp);
+    }
+
+    void swap(const std::vector<T>&& externalVector)
+    {
+        std::vector<T> temp = std::move(this->data_->vector);
+        this->data_->vector = std::move(externalVector.data_->vector);
+        externalVector.data_ =  std::move(temp);
     }
 
     // Display the vector content
