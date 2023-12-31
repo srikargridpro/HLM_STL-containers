@@ -29,7 +29,7 @@ public:
 
 template <typename T>
 class Vector {
-protected:
+private:
     /// @brief struct Data
     // Data struct is a simple way to create & manage the vector container
     // Vector Will never expose the pointer or even a reference externaly 
@@ -618,3 +618,73 @@ public:
 };
 
 } // namespace HLM
+
+// MultiplyFunctor implementation
+template <typename T>
+class MultiplyFunctor : public HLM::ReduceFunctor<T> {
+public:
+    T operator()(const T& acc, const T& element) const override {
+        return acc * element;
+    }
+};
+
+// AddFunctor implementation (example of another functor)
+template <typename T>
+class AddFunctor : public HLM::ReduceFunctor<T> {
+public:
+    T operator()(const T& acc, const T& element) const override {
+        return (acc + element + val);
+    }
+    
+    T val;
+};
+
+class replacer : public HLM::BroadcastFunctor<int> {
+public:
+     void operator()(int& element) override { element = val; }
+     int val;
+};
+
+HLM::Vector<int> tester()
+{
+    HLM::Vector<int> x = std::vector<int>{99, 98, 97};
+    return x;
+}
+/*
+int main() {
+
+    // Tests and demo
+    // Use Valgrind to check for memory leaks
+    HLM::Vector<int> vectorRef0 =  std::vector<int>{1, 2, 3, 4, 5, 2, 4, 6, 8, 10};
+    vectorRef0.display();
+    std::cout << "ref_count = " << vectorRef0.ref_count() << "\n";
+    
+    HLM::Vector<int> vectorRef1(std::vector<int>{1, 2, 3, 4, 5, 2, 4, 6, 8, 10});
+    vectorRef1.display();
+    std::cout << "ref_count = " << vectorRef1.ref_count() << "\n";
+
+    std::vector<int> init_temp = std::vector<int>{1, 2, 3, 4, 5, 2, 4, 6, 8, 10};
+    HLM::Vector<int> vectorRef2(init_temp, HLM_COPY);
+    vectorRef2.display();
+    std::cout << "ref_count = " << vectorRef2.ref_count() << "\n";
+
+    HLM::Vector<int> vectorRef3(vectorRef0);
+    vectorRef3.display();
+    std::cout << "ref_count = " << vectorRef3.ref_count() << "\n";
+
+    HLM::Vector<int> vectorRef4;
+    vectorRef4 = std::vector<int>{1, 2, 3, 4, 5, 2, 4, 6, 8, 10};
+    vectorRef4.display();
+    std::cout << "ref_count = " << vectorRef4.ref_count() << "\n";
+
+    HLM::Vector<int> vectorRef5;
+    vectorRef5 = init_temp;
+    vectorRef5.display();
+    std::cout << "ref_count = " << vectorRef5.ref_count() << "\n";
+
+    HLM::Vector<int> vectorRef6;
+    vectorRef6 = vectorRef5;
+    vectorRef6.display();
+    std::cout << "ref_count = " << vectorRef6.ref_count() << "\n";
+}
+*/
