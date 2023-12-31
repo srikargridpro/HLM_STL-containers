@@ -113,7 +113,7 @@ protected:
     // Release the data
     void release_reference() {
         if (data_) {
-            data_->count--;
+            --data_->count;
             if (data_->count == 0) {
                 delete data_;
             }
@@ -236,7 +236,7 @@ public:
     } 
 
     const Vector& operator=(const Vector<T>& externalVector) {
-        force_delete_data();
+        release_reference();
         this->data_ = externalVector.data_;
         ++(this->data_->count); 
         return *this;
