@@ -219,7 +219,7 @@ public:
          else 
          {
             Data defaultdata;
-            (*this->data_) = (externalVector.is_valid() )? (*(externalVector.data_)) : defaultdata ;  
+            (*this->data_) = (externalVector.is_valid()) ? (*(externalVector.data_)) : defaultdata ;  
          }      
     }            
 
