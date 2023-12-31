@@ -568,6 +568,7 @@ public:
         this->data_->vector  = std::move(externalVector.data_->vector);
         externalVector.data_ = std::move(temp);
     }
+
     // Display the vector content
     void display() const {
         if (is_valid()) {
