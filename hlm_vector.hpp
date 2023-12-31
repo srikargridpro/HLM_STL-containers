@@ -157,8 +157,8 @@ public:
          }
          else
          {
-            throw std::runtime_error("Accessing null or released vector"); 
-            return false;  
+          throw std::runtime_error("Accessing null or released vector"); 
+          return false;  
          }
     }
 
@@ -187,13 +187,15 @@ public:
           *(data_->vector) = std::move(externalVector);
     }
 
+
+
     Vector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE)   
     {
         std::atexit(Data::checkGlobalCount);
         if(move_semantic == HLM_COPY)
         {
            data_ = new Data(externalVector);
-           //*(data_->vector) = (externalVector);
+          //*(data_->vector) = (externalVector);
         }
         else
         {
@@ -276,7 +278,6 @@ public:
         }
     }
 
-    // unsafe but fast due to no check
     T& fast_access(const size_t& index)
     {
         return (*data_->vector)[static_cast<size_t>(index)]; 
@@ -335,12 +336,11 @@ public:
         }
     }
 
-    // Get the last of the vector
+    // Get the size of the vector
     T& back() const {
         return (is_valid() && size()) ? data_->vector->back()  : DefaultValue();
     }
-    
-    // Get the front of the vector
+
     T& front() const {
         return (is_valid() && size()) ? data_->vector->front() : DefaultValue();
     }
@@ -425,7 +425,7 @@ public:
     }
 
     // Begin iterator of the vector
-    typename std::vector<T>::iterator begin() {
+    typename std::vector<T>::iterator begin() {    // Swap external vector with internal
         if (is_valid()) {
             return data_->vector->begin();
         }
@@ -559,16 +559,16 @@ public:
 
     void swap(const std::vector<T>& externalVector)
     {
-        std::vector<T> temp  = std::move(this->data_->vector);
-        this->data_->vector  = std::move(externalVector.data_->vector);
-        externalVector.data_ = std::move(temp);
+        std::vector<T> temp = std::move(this->data_->vector);
+        this->data_->vector = std::move(externalVector.data_->vector);
+        externalVector.data_ =  std::move(temp);
     }
 
     void swap(const std::vector<T>&& externalVector)
     {
-        std::vector<T> temp  = std::move(this->data_->vector);
-        this->data_->vector  = std::move(externalVector.data_->vector);
-        externalVector.data_ = std::move(temp);
+        std::vector<T> temp = std::move(this->data_->vector);
+        this->data_->vector = std::move(externalVector.data_->vector);
+        externalVector.data_ =  std::move(temp);
     }
 
     // Display the vector content
