@@ -114,14 +114,14 @@ protected:
         }
     }
 
-    // Release the data
+    // Release the reference to data
     void release_reference() {
-        if (data_) {
-            --data_->count;
+        if (data_ != nullptr) {
+            --(data_->count);
             if (data_->count == 0) {
                 delete data_;
+                data_ = nullptr;            
             }
-            data_ = nullptr;
         }
     }
 
