@@ -403,6 +403,13 @@ public:
         }
     }
 
+    // resize the vector
+    void resize(const size_t& value = 0) {
+        if (is_valid()) {
+            data_->vector->resize(value);
+        }
+    }
+
     // shrink_to_fit the vector
     void shrink_to_fit(const T& value) {
         if (is_valid()) {
@@ -551,16 +558,16 @@ public:
 
     void swap(const std::vector<T>& externalVector)
     {
-        std::vector<T> temp = std::move(this->data_->vector);
-        this->data_->vector = std::move(externalVector.data_->vector);
-        externalVector.data_ =  std::move(temp);
+        std::vector<T> temp  = std::move(this->data_->vector);
+        this->data_->vector  = std::move(externalVector.data_->vector);
+        externalVector.data_ = std::move(temp);
     }
 
     void swap(const std::vector<T>&& externalVector)
     {
-        std::vector<T> temp = std::move(this->data_->vector);
-        this->data_->vector = std::move(externalVector.data_->vector);
-        externalVector.data_ =  std::move(temp);
+        std::vector<T> temp  = std::move(this->data_->vector);
+        this->data_->vector  = std::move(externalVector.data_->vector);
+        externalVector.data_ = std::move(temp);
     }
 
     // Display the vector content
