@@ -187,15 +187,13 @@ public:
           *(data_->vector) = std::move(externalVector);
     }
 
-
-
     Vector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE)   
     {
         std::atexit(Data::checkGlobalCount);
         if(move_semantic == HLM_COPY)
         {
            data_ = new Data(externalVector);
-          //*(data_->vector) = (externalVector);
+           //*(data_->vector) = (externalVector);
         }
         else
         {
@@ -278,6 +276,7 @@ public:
         }
     }
 
+    // unsafe but fast due to no check
     T& fast_access(const size_t& index)
     {
         return (*data_->vector)[static_cast<size_t>(index)]; 
@@ -336,11 +335,12 @@ public:
         }
     }
 
-    // Get the size of the vector
+    // Get the last of the vector
     T& back() const {
         return (is_valid() && size()) ? data_->vector->back()  : DefaultValue();
     }
-
+    
+    // Get the front of the vector
     T& front() const {
         return (is_valid() && size()) ? data_->vector->front() : DefaultValue();
     }
@@ -549,9 +549,10 @@ public:
         }
     }
 
-    void swap(const Vector& externalVector)
+    // Swap external vector with internal
+    void swap(const Vector<T>& externalVector)
     {
-        const Data* temp = this->data_;
+        const Data<T>* temp = this->data_;
         this->data = externalVector.data_;
         externalVector.data_ =  temp;
     }
