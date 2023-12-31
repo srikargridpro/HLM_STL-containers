@@ -183,9 +183,15 @@ public:
     {
         std::atexit(Data::checkGlobalCount);
         if(move_semantic == HLM_COPY)
-          *(data_->vector) = (externalVector);
+        {
+           data_ = new Data(externalVector);
+          //*(data_->vector) = (externalVector);
+        }
         else
-          *(data_->vector) = std::move(externalVector);
+        {
+            data_ = (new Data());
+           *(data_->vector) = std::move(externalVector);      
+        }
     }
 
     Vector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE)   
