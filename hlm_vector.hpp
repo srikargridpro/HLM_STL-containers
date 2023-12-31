@@ -45,16 +45,12 @@ protected:
         static void checkGlobalCount() {
             if (GlobalCount() != 0) {
                 // Throw an exception or print an error message
-                throw std::runtime_error("Not all HLM::Vector data instances have been deleted");
+                throw std::runtime_error("Not all instances have been deleted");
             }
         }
-        // Even though Public, its only for internal use within the Vector class
-        // Cannot be accesed outside by reference or pointer.
-        // Will only be deleted if no one is holding the reference
+
         std::vector<T>* vector;
-        // Reference Count, Tells you how many HLM::Vector classes are holding the reference to this struct Data Object
         size_t count;
-        // A Unique ID given when a new struct Data Object is created
         size_t UUID;
 
         Data() : vector(new std::vector<T>()), count(1) 
@@ -78,7 +74,7 @@ protected:
         ~Data() 
         {
             (--GlobalCount());
-            std::cout << "Deleted Vector with ID =  " << UUID << "\n";
+            std::cout << "Deleted Vector with ID =  " << UUID << "\n";            
             delete vector;
         }
     };
@@ -114,14 +110,14 @@ protected:
         }
     }
 
-    // Release the reference to data
+    // Release the data
     void release_reference() {
-        if (data_ != nullptr) {
-            --(data_->count);
+        if (data_) {
+            --data_->count;
             if (data_->count == 0) {
                 delete data_;
-                data_ = nullptr;            
             }
+            data_ = nullptr;
         }
     }
 
@@ -155,7 +151,7 @@ public:
     // check validity
     bool is_valid() const
     {
-         if(data_ != nullptr && data_->vector != nullptr  && (data_->count) >= 0 ) 
+         if(data_ != nullptr && data_->vector != nullptr  && (data_->count) != 0 ) 
          {
             return true;
          }
@@ -252,6 +248,22 @@ public:
         ++(this->data_->count); 
         return *this;
     } 
+
+    // Overload + operator for concatenation
+    Vector operator+(const Vector& other) const {
+        Vector result;
+
+        if (is_valid()) {
+            // Copy the elements of the current vector
+            result.data_->vector = new std::vector<T>(*data_->vector);
+
+            // Concatenate the elements of the other vector
+            if (other.is_valid()) {
+                result.data_->vector->insert(result.data_->vector->end(), other.data_->vector->begin(), other.data_->vector->end());
+            }
+        }
+        return result;
+    }
 
     // Conversion operator to std::vector<T>
     // Pass a Copy to external vec if the data is valid 
@@ -398,7 +410,14 @@ public:
         }
     }
 
-  // Begin iterator of the vector
+    // insert an element to the front of the vector
+    void insert(const Vector& other) const {
+          if (other.is_valid() && this->is_valid()) {
+                this->data_->vector->insert(this->data_->vector->end(), other.data_->vector->begin(), other.data_->vector->end());
+            }
+    }
+
+    // Begin iterator of the vector
     typename std::vector<T>::iterator begin() {
         if (is_valid()) {
             return data_->vector->begin();
