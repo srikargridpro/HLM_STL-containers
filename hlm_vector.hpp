@@ -79,8 +79,7 @@ protected:
         {
             (--GlobalCount());
             std::cout << "Deleted Vector with ID =  " << UUID << "\n";
-            if(GlobalCount() <= 0)           
-               delete vector;
+            delete vector;
         }
     };
 
