@@ -557,18 +557,17 @@ public:
 
     void swap(const std::vector<T>& externalVector)
     {
-        std::vector<T> temp  = std::move(this->data_->vector);
+        std::vector<T> temp  = std::move(*(this->data_->vector));
         this->data_->vector  = std::move(externalVector.data_->vector);
         externalVector.data_ = std::move(temp);
     }
 
     void swap(const std::vector<T>&& externalVector)
     {
-        std::vector<T> temp  = std::move(this->data_->vector);
+        std::vector<T> temp  = std::move(*(this->data_->vector));
         this->data_->vector  = std::move(externalVector.data_->vector);
         externalVector.data_ = std::move(temp);
     }
-
     // Display the vector content
     void display() const {
         if (is_valid()) {
