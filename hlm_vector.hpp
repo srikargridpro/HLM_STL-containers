@@ -187,8 +187,6 @@ public:
           *(data_->vector) = std::move(externalVector);
     }
 
-
-
     Vector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE)   
     {
         std::atexit(Data::checkGlobalCount);
