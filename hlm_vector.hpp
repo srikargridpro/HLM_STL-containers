@@ -130,9 +130,15 @@ protected:
     T* operator->();
     const T* operator->() const;
 
-    // Delete operator new and operator delete
+/*
+ // Delete operator new and operator delete
     void* operator new(std::size_t) = delete;
     void  operator delete(void*) = delete;
+*/
+
+    // Protect operator new and operator delete
+    void* operator new(std::size_t);
+    void  operator delete(void*);
 
 public:
 
@@ -141,11 +147,6 @@ public:
         return Vector<T>();
     }
     
-    // Delete operator new and operator delete
-    void* operator new(std::size_t) = delete;
-    void operator delete(void*) = delete;
-
-
     // Crititcal functionality !!! Do not modify 
     // check validity
     bool is_valid() const
@@ -556,7 +557,3 @@ public:
 };
 
 } // namespace HLM
-
-
-
-
