@@ -45,12 +45,16 @@ protected:
         static void checkGlobalCount() {
             if (GlobalCount() != 0) {
                 // Throw an exception or print an error message
-                throw std::runtime_error("Not all instances have been deleted");
+                throw std::runtime_error("Not all HLM::Vector data instances have been deleted");
             }
         }
-
+        // Even though Public, its only for internal use within the Vector class
+        // Cannot be accesed outside by reference or pointer.
+        // Will only be deleted if no one is holding the reference
         std::vector<T>* vector;
+        // Reference Count, Tells you how many HLM::Vector classes are holding the reference to this struct Data Object
         size_t count;
+        // A Unique ID given when a new struct Data Object is created
         size_t UUID;
 
         Data() : vector(new std::vector<T>()), count(1) 
@@ -74,8 +78,9 @@ protected:
         ~Data() 
         {
             (--GlobalCount());
-            std::cout << "Deleted Vector with ID =  " << UUID << "\n";            
-            delete vector;
+            std::cout << "Deleted Vector with ID =  " << UUID << "\n";
+            if(GlobalCount() <= 0)           
+               delete vector;
         }
     };
 
