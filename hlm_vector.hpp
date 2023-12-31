@@ -618,35 +618,3 @@ public:
 };
 
 } // namespace HLM
-
-// MultiplyFunctor implementation
-template <typename T>
-class MultiplyFunctor : public HLM::ReduceFunctor<T> {
-public:
-    T operator()(const T& acc, const T& element) const override {
-        return acc * element;
-    }
-};
-
-// AddFunctor implementation (example of another functor)
-template <typename T>
-class AddFunctor : public HLM::ReduceFunctor<T> {
-public:
-    T operator()(const T& acc, const T& element) const override {
-        return (acc + element + val);
-    }
-    
-    T val;
-};
-
-class replacer : public HLM::BroadcastFunctor<int> {
-public:
-     void operator()(int& element) override { element = val; }
-     int val;
-};
-
-HLM::Vector<int> tester()
-{
-    HLM::Vector<int> x = std::vector<int>{99, 98, 97};
-    return x;
-}
