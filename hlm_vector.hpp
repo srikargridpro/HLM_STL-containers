@@ -282,7 +282,7 @@ public:
     }
 
     // Access element at index (allowing negative indices for reverse access)
-    T& operator[](int index) {
+    T& operator[](const int& index) {
         if (is_valid()) {
             if (index >= 0 && static_cast<size_t>(index) < data_->vector->size()) {
                 return (*data_->vector)[static_cast<size_t>(index)];
@@ -300,7 +300,7 @@ public:
     }
 
     // Access element at index
-    T& operator[](const size_t index) {
+    T& operator[](const size_t& index) {
         if (is_valid()) {
             if ((index) < data_->vector->size()) {
                 return (*data_->vector)[(index)];
