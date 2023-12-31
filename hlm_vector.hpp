@@ -157,8 +157,8 @@ public:
          }
          else
          {
-          throw std::runtime_error("Accessing null or released vector"); 
-          return false;  
+            throw std::runtime_error("Accessing null or released vector"); 
+            return false;  
          }
     }
 
