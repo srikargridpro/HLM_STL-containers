@@ -1,3 +1,5 @@
+#ifndef _HLM_SMART_VECTOR_HPP_
+#define _HLM_SMART_VECTOR_HPP_
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -62,7 +64,7 @@ private:
             #endif
         }
         
-        Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(externalVector)), count(1) 
+        Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)  
         { 
             std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
@@ -71,7 +73,7 @@ private:
             #endif
         }
 
-        Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(externalVector)), count(1) 
+        Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)  
         { 
             std::atexit(Data::checkGlobalCount);
             UUID = (++GlobalCount());
@@ -657,7 +659,7 @@ public:
 }; // class Vector End
 
 } // namespace HLM
- 
+ #endif
 /*
 
 /////////////////////////////////////////////////////////////
