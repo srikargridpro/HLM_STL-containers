@@ -1,6 +1,8 @@
-#include "hlm_vector.h"
+#pragma once
 #ifndef _HLM_SMART_VECTOR_CPP_
 #define _HLM_SMART_VECTOR_CPP_
+
+#include "hlm_vector.h"
 
 template <typename T>
 HLM::Vector<T>::Data::Data() : vector(new std::vector<T>()), count(1)
