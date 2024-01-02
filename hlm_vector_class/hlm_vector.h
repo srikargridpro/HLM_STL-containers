@@ -190,8 +190,8 @@ public:
     inline T& find(const T& value);
     inline const T& find(const T& value) const;
     // Swap external vector with internal uisng move semantics
-    inline void swap(const SharedVector& externalVector);
-    inline void swap(const std::vector<T>& externalVector);
+    inline void swap(const SharedVector&    externalVector);
+    inline void swap(const std::vector<T>&  externalVector);
     inline void swap(const std::vector<T>&& externalVector);
     
     // Display the vector content
