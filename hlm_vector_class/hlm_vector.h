@@ -1,3 +1,4 @@
+#pragma once
 #ifndef _HLM_SMART_VECTOR_HPP_
 #define _HLM_SMART_VECTOR_HPP_
 #include <iostream>
@@ -8,7 +9,9 @@
 #include <omp.h>
 #endif
 
-namespace HLM {
+#define USE_HEADER_ONLY_IMPLEMENTATION
+
+namespace HELIUM_API {
 
 // Makes sense :) sometimes
 #define until while
@@ -54,7 +57,7 @@ private:
         size_t UUID;
 
         inline Data();
-        inline Data(const std::vector<T>& externalVector);
+        inline Data(const std::vector<T>&  externalVector);
         inline Data(const std::vector<T>&& externalVector);
         inline ~Data();
     };
@@ -75,14 +78,16 @@ private:
     inline const T* operator->() const;
 
     void* operator new(std::size_t);
-    void operator delete(void*);
+    void  operator delete(void*);
 
 public:
+
 ////////////////////////////////////////////////////////////////////////////////////////
 ////////  Smart & Safety check functions //////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////  
     // Crititcal functionality !!! Do not modify 
     // check validity
+
     inline bool is_valid() const;
     inline static T& DefaultValue();
     inline size_t ref_count();
@@ -99,8 +104,8 @@ public:
     #define HLM_COPY 0
 
     inline SharedVector();
+    inline SharedVector(const std::vector<T>&  externalVector, const bool& move_semantic = HLM_MOVE);    
     inline SharedVector(const std::vector<T>&& externalVector, const bool& move_semantic = HLM_MOVE);
-    inline SharedVector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE);
     inline SharedVector(const SharedVector<T>& externalVector, const bool& move_semantic = HLM_MOVE);
     inline ~SharedVector();
 
@@ -110,8 +115,8 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////
 
     // Assignment operator from external vector using move semantics
+    inline const SharedVector& operator=(const std::vector<T>&  externalVector);
     inline const SharedVector& operator=(const std::vector<T>&& externalVector);
-    inline const SharedVector& operator=(const std::vector<T>& externalVector);
     inline const SharedVector& operator=(const SharedVector<T>& externalVector);
 
     // Equality operator
@@ -134,7 +139,8 @@ public:
     
 //////////////////////////////////////////////////////////////////////////////////////////
 /////////// Wrapper functions around std::vector member functions
-/////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////
+
     // Get data ie... the first element
     inline const T* data() const;
     inline T* data();
@@ -164,8 +170,9 @@ public:
     inline typename std::vector<T>::const_iterator end() const;
 
 ////////////////////////////////////////////////////////////////////
-////////// Fancy Functions  ///////////////////////////////////////
-///////////////////////////////////////////////////////////////////
+////////// Fancy Functions  ////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+
     // Broadcast a value to all elements in the vector
     inline void broadcast(const T& value);
     // Broadcast a functor to all elements in the vector
@@ -186,11 +193,12 @@ public:
     inline void swap(const SharedVector& externalVector);
     inline void swap(const std::vector<T>& externalVector);
     inline void swap(const std::vector<T>&& externalVector);
+    
     // Display the vector content
     inline void display() const;
 };
 
-}  // namespace HLM
+}  // namespace HELIUM_API
 
 #ifdef USE_HEADER_ONLY_IMPLEMENTATION
 #include "hlm_vector.cpp"
