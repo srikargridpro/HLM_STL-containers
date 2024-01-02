@@ -5,48 +5,48 @@
 #include "hlm_vector.h"
 
 template <typename T>
-HLM::Vector<T>::Data::Data() : vector(new std::vector<T>()), count(1)
+HLM::SharedVector<T>::Data::Data() : vector(new std::vector<T>()), count(1)
 {
     std::atexit(Data::checkGlobalCount);
     UUID = (++GlobalCount());
 #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
-    std::cout << "Created New Vector with ID = " << GlobalCount() << "\n";
+    std::cout << "Created New SharedVector with ID = " << GlobalCount() << "\n";
 #endif
 }
 
 template <typename T>
-HLM::Vector<T>::Data::Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)
+HLM::SharedVector<T>::Data::Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)
 {
     std::atexit(Data::checkGlobalCount);
     UUID = (++GlobalCount());
 #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
-    std::cout << "Created New Vector with ID = " << GlobalCount() << "\n";
+    std::cout << "Created New SharedVector with ID = " << GlobalCount() << "\n";
 #endif
 }
 
 template <typename T>
-HLM::Vector<T>::Data::Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)
+HLM::SharedVector<T>::Data::Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)
 {
     std::atexit(Data::checkGlobalCount);
     UUID = (++GlobalCount());
 #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
-    std::cout << "Created New Vector with ID = " << GlobalCount() << "\n";
+    std::cout << "Created New SharedVector with ID = " << GlobalCount() << "\n";
 #endif
 }
 
 template <typename T>
-HLM::Vector<T>::Data::~Data()
+HLM::SharedVector<T>::Data::~Data()
 {
     --GlobalCount();
 #ifdef HELIUM_API_DEBUG_PROFILE_ENABLE
-    std::cout << "Deleted Vector with ID =  " << UUID << "\n";
+    std::cout << "Deleted SharedVector with ID =  " << UUID << "\n";
 #endif
     delete vector;
 }
 
 // Caution : Not meant for external use
 template <typename T>
-void HLM::Vector<T>::delete_vector() {
+void HLM::SharedVector<T>::delete_vector() {
     try {
         if (m_data_ != nullptr) {
             {
@@ -64,7 +64,7 @@ void HLM::Vector<T>::delete_vector() {
 // Only meant for reassigning new vector
 // Delete the data and move new copy
 template <typename T>
-void HLM::Vector<T>::force_delete_data() {
+void HLM::SharedVector<T>::force_delete_data() {
     if (m_data_ != nullptr) {
         {
             delete m_data_;
@@ -75,7 +75,7 @@ void HLM::Vector<T>::force_delete_data() {
 
 // Release the data
 template <typename T>
-void HLM::Vector<T>::release_reference() {
+void HLM::SharedVector<T>::release_reference() {
     if (m_data_ != nullptr) {
         --m_data_->count;
         if (m_data_->count == 0) {
@@ -89,7 +89,7 @@ void HLM::Vector<T>::release_reference() {
 // Crititcal functionality !!! Do not modify 
 // check validity
 template <typename T>
-bool HLM::Vector<T>::is_valid() const
+bool HLM::SharedVector<T>::is_valid() const
 {
     if (m_data_ != nullptr && m_data_->vector != nullptr && (m_data_->count) != 0)
     {
@@ -103,41 +103,41 @@ bool HLM::Vector<T>::is_valid() const
 }
 
 template <typename T>
-T& HLM::Vector<T>::DefaultValue()
+T& HLM::SharedVector<T>::DefaultValue()
 {
     static T default_value;
     return default_value;
 }
 
 template <typename T>
-size_t HLM::Vector<T>::ref_count()
+size_t HLM::SharedVector<T>::ref_count()
 {
     return m_data_->count;
 }
 
 template <typename T>
-const size_t HLM::Vector<T>::ref_count() const
+const size_t HLM::SharedVector<T>::ref_count() const
 {
     return m_data_->count;
 }
 
 template <typename T>
-size_t HLM::Vector<T>::data_id()
+size_t HLM::SharedVector<T>::data_id()
 {
     return m_data_->UUID;
 }
 
 template <typename T>
-const size_t HLM::Vector<T>::data_id() const
+const size_t HLM::SharedVector<T>::data_id() const
 {
     return m_data_->UUID;
 }
 
 template <typename T>
-HLM::Vector<T>::Vector() : m_data_(new Data()) {}
+HLM::SharedVector<T>::SharedVector() : m_data_(new Data()) {}
 
 template <typename T>
-HLM::Vector<T>::Vector(const std::vector<T>&& externalVector, const bool& move_semantic)
+HLM::SharedVector<T>::SharedVector(const std::vector<T>&& externalVector, const bool& move_semantic)
 {
     if (move_semantic == HLM_COPY)
     {
@@ -151,7 +151,7 @@ HLM::Vector<T>::Vector(const std::vector<T>&& externalVector, const bool& move_s
 }
 
 template <typename T>
-HLM::Vector<T>::Vector(const std::vector<T>& externalVector, const bool& move_semantic)
+HLM::SharedVector<T>::SharedVector(const std::vector<T>& externalVector, const bool& move_semantic)
 {
     if (move_semantic == HLM_COPY)
     {
@@ -165,7 +165,7 @@ HLM::Vector<T>::Vector(const std::vector<T>& externalVector, const bool& move_se
 }
 
 template <typename T>
-HLM::Vector<T>::Vector(const HLM::Vector<T>& externalVector, const bool& move_semantic)
+HLM::SharedVector<T>::SharedVector(const HLM::SharedVector<T>& externalVector, const bool& move_semantic)
 {
     std::atexit(Data::checkGlobalCount);
     if (move_semantic == HLM_MOVE)
@@ -180,13 +180,13 @@ HLM::Vector<T>::Vector(const HLM::Vector<T>& externalVector, const bool& move_se
 }
 
 template <typename T>
-HLM::Vector<T>::~Vector()
+HLM::SharedVector<T>::~SharedVector()
 {
     release_reference();
 }
 
 template <typename T>
-const HLM::Vector<T>& HLM::Vector<T>::operator=(const std::vector<T>&& externalVector)
+const HLM::SharedVector<T>& HLM::SharedVector<T>::operator=(const std::vector<T>&& externalVector)
 {
     delete_vector();
     (m_data_->vector) = new std::vector<T>(std::move(externalVector));
@@ -194,7 +194,7 @@ const HLM::Vector<T>& HLM::Vector<T>::operator=(const std::vector<T>&& externalV
 }
 
 template <typename T>
-const HLM::Vector<T>& HLM::Vector<T>::operator=(const std::vector<T>& externalVector)
+const HLM::SharedVector<T>& HLM::SharedVector<T>::operator=(const std::vector<T>& externalVector)
 {
     delete_vector();
     (m_data_->vector) = new std::vector<T>(std::move(externalVector));
@@ -202,7 +202,7 @@ const HLM::Vector<T>& HLM::Vector<T>::operator=(const std::vector<T>& externalVe
 }
 
 template <typename T>
-const HLM::Vector<T>& HLM::Vector<T>::operator=(const HLM::Vector<T>& externalVector)
+const HLM::SharedVector<T>& HLM::SharedVector<T>::operator=(const HLM::SharedVector<T>& externalVector)
 {
     release_reference();
     this->m_data_ = externalVector.m_data_;
@@ -211,21 +211,21 @@ const HLM::Vector<T>& HLM::Vector<T>::operator=(const HLM::Vector<T>& externalVe
 }
 
 template <typename T>
-bool HLM::Vector<T>::operator==(const Vector& other) const
+bool HLM::SharedVector<T>::operator==(const SharedVector& other) const
 {
     return (m_data_ == other.m_data_);
 }
 
 template <typename T>
-bool HLM::Vector<T>::operator!=(const Vector& other) const
+bool HLM::SharedVector<T>::operator!=(const SharedVector& other) const
 {
     return !(m_data_ == other.m_data_);
 }
 
 template <typename T>
-HLM::Vector<T> HLM::Vector<T>::operator+(const Vector& other) const
+HLM::SharedVector<T> HLM::SharedVector<T>::operator+(const SharedVector& other) const
 {
-    Vector result;
+    SharedVector result;
 
     if (is_valid())
     {
@@ -240,7 +240,7 @@ HLM::Vector<T> HLM::Vector<T>::operator+(const Vector& other) const
 }
 
 template <typename T>
-HLM::Vector<T>::operator std::vector<T>() const
+HLM::SharedVector<T>::operator std::vector<T>() const
 {
     if (is_valid())
     {
@@ -254,13 +254,13 @@ HLM::Vector<T>::operator std::vector<T>() const
 }
 
 template <typename T>
-T& HLM::Vector<T>::fast_access(const size_t& index)
+T& HLM::SharedVector<T>::fast_access(const size_t& index)
 {
     return (*m_data_->vector)[static_cast<size_t>(index)];
 }
 
 template <typename T>
-T& HLM::Vector<T>::operator[](const int& index)
+T& HLM::SharedVector<T>::operator[](const int& index)
 {
     if (is_valid())
     {
@@ -285,7 +285,7 @@ T& HLM::Vector<T>::operator[](const int& index)
 }
 
 template <typename T>
-T& HLM::Vector<T>::operator[](const size_t& index)
+T& HLM::SharedVector<T>::operator[](const size_t& index)
 {
     if (is_valid())
     {
@@ -306,7 +306,7 @@ T& HLM::Vector<T>::operator[](const size_t& index)
 }
 
 template <typename T>
-const T& HLM::Vector<T>::operator[](const int index) const
+const T& HLM::SharedVector<T>::operator[](const int index) const
 {
     if (is_valid())
     {
@@ -331,61 +331,61 @@ const T& HLM::Vector<T>::operator[](const int index) const
 }
 
 template <typename T>
-const T* HLM::Vector<T>::data() const
+const T* HLM::SharedVector<T>::data() const
 {
     return (is_valid() && size()) ? &(*(m_data_->vector))[0] : &(DefaultValue());
 }
 
 template <typename T>
-T* HLM::Vector<T>::data()
+T* HLM::SharedVector<T>::data()
 {
     return (is_valid() && size()) ? &(*(m_data_->vector))[0] : &(DefaultValue());
 }
 
 template <typename T>
-T& HLM::Vector<T>::back()
+T& HLM::SharedVector<T>::back()
 {
     return (is_valid() && size()) ? m_data_->vector->back() : DefaultValue();
 }
 
 template <typename T>
-const T& HLM::Vector<T>::back() const
+const T& HLM::SharedVector<T>::back() const
 {
     return (is_valid() && size()) ? m_data_->vector->back() : DefaultValue();
 }
 
 template <typename T>
-T& HLM::Vector<T>::front()
+T& HLM::SharedVector<T>::front()
 {
     return (is_valid() && size()) ? m_data_->vector->front() : DefaultValue();
 }
 
 template <typename T>
-const T& HLM::Vector<T>::front() const
+const T& HLM::SharedVector<T>::front() const
 {
     return (is_valid() && size()) ? m_data_->vector->front() : DefaultValue();
 }
 
 template <typename T>
-size_t HLM::Vector<T>::size() const
+size_t HLM::SharedVector<T>::size() const
 {
     return (is_valid()) ? m_data_->vector->size() : 0;
 }
 
 template <typename T>
-size_t HLM::Vector<T>::capacity() const
+size_t HLM::SharedVector<T>::capacity() const
 {
     return (is_valid()) ? m_data_->vector->capacity() : 0;
 }
 
 template <typename T>
-size_t HLM::Vector<T>::max_capacity() const
+size_t HLM::SharedVector<T>::max_capacity() const
 {
     return (is_valid()) ? m_data_->vector->max_capacity() : 0;
 }
 
 template <typename T>
-void HLM::Vector<T>::clear()
+void HLM::SharedVector<T>::clear()
 {
     if (is_valid())
     {
@@ -394,7 +394,7 @@ void HLM::Vector<T>::clear()
 }
 
 template <typename T>
-void HLM::Vector<T>::push_back(const T& value)
+void HLM::SharedVector<T>::push_back(const T& value)
 {
     if (is_valid())
     {
@@ -403,7 +403,7 @@ void HLM::Vector<T>::push_back(const T& value)
 }
 
 template <typename T>
-void HLM::Vector<T>::emplace_back(const T& value)
+void HLM::SharedVector<T>::emplace_back(const T& value)
 {
     if (is_valid())
     {
@@ -412,7 +412,7 @@ void HLM::Vector<T>::emplace_back(const T& value)
 }
 
 template <typename T>
-T HLM::Vector<T>::pop_back(const T& value)
+T HLM::SharedVector<T>::pop_back(const T& value)
 {
     if (is_valid())
     {
@@ -427,7 +427,7 @@ T HLM::Vector<T>::pop_back(const T& value)
 }
 
 template <typename T>
-void HLM::Vector<T>::emplace(const T& value)
+void HLM::SharedVector<T>::emplace(const T& value)
 {
     if (is_valid())
     {
@@ -436,7 +436,7 @@ void HLM::Vector<T>::emplace(const T& value)
 }
 
 template <typename T>
-void HLM::Vector<T>::resize(const size_t& value)
+void HLM::SharedVector<T>::resize(const size_t& value)
 {
     if (is_valid())
     {
@@ -445,7 +445,7 @@ void HLM::Vector<T>::resize(const size_t& value)
 }
 
 template <typename T>
-void HLM::Vector<T>::shrink_to_fit(const T& value)
+void HLM::SharedVector<T>::shrink_to_fit(const T& value)
 {
     if (is_valid())
     {
@@ -454,7 +454,7 @@ void HLM::Vector<T>::shrink_to_fit(const T& value)
 }
 
 template <typename T>
-void HLM::Vector<T>::insert(const Vector& other) const
+void HLM::SharedVector<T>::insert(const SharedVector& other) const
 {
     if (other.is_valid() && this->is_valid())
     {
@@ -463,7 +463,7 @@ void HLM::Vector<T>::insert(const Vector& other) const
 }
 
 template <typename T>
-typename std::vector<T>::iterator HLM::Vector<T>::begin()
+typename std::vector<T>::iterator HLM::SharedVector<T>::begin()
 {
     if (is_valid())
     {
@@ -472,7 +472,7 @@ typename std::vector<T>::iterator HLM::Vector<T>::begin()
 }
 
 template <typename T>
-typename std::vector<T>::const_iterator HLM::Vector<T>::begin() const
+typename std::vector<T>::const_iterator HLM::SharedVector<T>::begin() const
 {
     if (is_valid())
     {
@@ -481,7 +481,7 @@ typename std::vector<T>::const_iterator HLM::Vector<T>::begin() const
 }
 
 template <typename T>
-typename std::vector<T>::iterator HLM::Vector<T>::end()
+typename std::vector<T>::iterator HLM::SharedVector<T>::end()
 {
     if (is_valid())
     {
@@ -490,7 +490,7 @@ typename std::vector<T>::iterator HLM::Vector<T>::end()
 }
 
 template <typename T>
-typename std::vector<T>::const_iterator HLM::Vector<T>::end() const
+typename std::vector<T>::const_iterator HLM::SharedVector<T>::end() const
 {
     if (is_valid())
     {
@@ -499,7 +499,7 @@ typename std::vector<T>::const_iterator HLM::Vector<T>::end() const
 }
 
 template <typename T>
-void HLM::Vector<T>::broadcast(const T& value)
+void HLM::SharedVector<T>::broadcast(const T& value)
 {
     if (is_valid())
     {
@@ -508,7 +508,7 @@ void HLM::Vector<T>::broadcast(const T& value)
 }
 
 template <typename T>
-void HLM::Vector<T>::broadcast(BroadcastFunctor<T>& functor)
+void HLM::SharedVector<T>::broadcast(BroadcastFunctor<T>& functor)
 {
     if (is_valid())
     {
@@ -523,7 +523,7 @@ void HLM::Vector<T>::broadcast(BroadcastFunctor<T>& functor)
 }
 
 template <typename T>
-void HLM::Vector<T>::replace_with(const T& oldVal, const T& newVal)
+void HLM::SharedVector<T>::replace_with(const T& oldVal, const T& newVal)
 {
     if (is_valid())
     {
@@ -532,7 +532,7 @@ void HLM::Vector<T>::replace_with(const T& oldVal, const T& newVal)
 }
 
 template <typename T>
-typename std::vector<T>::iterator HLM::Vector<T>::find_iter(const T& value)
+typename std::vector<T>::iterator HLM::SharedVector<T>::find_iter(const T& value)
 {
     if (is_valid())
     {
@@ -545,7 +545,7 @@ typename std::vector<T>::iterator HLM::Vector<T>::find_iter(const T& value)
 }
 
 template <typename T>
-typename std::vector<T>::const_iterator HLM::Vector<T>::find_iter(const T& value) const
+typename std::vector<T>::const_iterator HLM::SharedVector<T>::find_iter(const T& value) const
 {
     if (is_valid())
     {
@@ -558,7 +558,7 @@ typename std::vector<T>::const_iterator HLM::Vector<T>::find_iter(const T& value
 }
 
 template <typename T>
-T& HLM::Vector<T>::find(const T& value)
+T& HLM::SharedVector<T>::find(const T& value)
 {
     if (is_valid())
     {
@@ -571,7 +571,7 @@ T& HLM::Vector<T>::find(const T& value)
 }
 
 template <typename T>
-const T& HLM::Vector<T>::find(const T& value) const
+const T& HLM::SharedVector<T>::find(const T& value) const
 {
     if (is_valid())
     {
@@ -585,7 +585,7 @@ const T& HLM::Vector<T>::find(const T& value) const
 
 // Reduce the vector using a functor
 template <typename T>
-T HLM::Vector<T>::reduce(const ReduceFunctor<T>& functor) {
+T HLM::SharedVector<T>::reduce(const ReduceFunctor<T>& functor) {
     if (is_valid()) {
         T accum = (*this)[0];
 
@@ -600,7 +600,7 @@ T HLM::Vector<T>::reduce(const ReduceFunctor<T>& functor) {
 
 // Filter the vector to remove duplicates
 template <typename T>
-void HLM::Vector<T>::filter() {
+void HLM::SharedVector<T>::filter() {
     if (is_valid()) {
         std::sort(m_data_->vector->begin(), m_data_->vector->end());
         m_data_->vector->erase(std::unique(m_data_->vector->begin(), m_data_->vector->end()), m_data_->vector->end());
@@ -609,21 +609,21 @@ void HLM::Vector<T>::filter() {
 
 // Swap external vector with internal
 template <typename T>
-void HLM::Vector<T>::swap(const Vector& externalVector) {
+void HLM::SharedVector<T>::swap(const SharedVector& externalVector) {
     const Data* temp = this->m_data_;
     this->m_data_ = externalVector.m_data_;
     externalVector.m_data_ = temp;
 }
 
 template <typename T>
-void HLM::Vector<T>::swap(const std::vector<T>& externalVector) {
+void HLM::SharedVector<T>::swap(const std::vector<T>& externalVector) {
     std::vector<T> temp    = std::move(*(this->m_data_->vector));
     this->m_data_->vector  = std::move(externalVector.m_data_->vector);
     externalVector.m_data_ = std::move(temp);
 }
 
 template <typename T>
-void HLM::Vector<T>::swap(const std::vector<T>&& externalVector) {
+void HLM::SharedVector<T>::swap(const std::vector<T>&& externalVector) {
     std::vector<T> temp    = std::move(*(this->m_data_->vector));
     this->m_data_->vector  = std::move(externalVector.m_data_->vector);
     externalVector.m_data_ = std::move(temp);
@@ -631,10 +631,10 @@ void HLM::Vector<T>::swap(const std::vector<T>&& externalVector) {
 
 // Display the vector content
 template <typename T>
-void HLM::Vector<T>::display() const {
+void HLM::SharedVector<T>::display() const {
     if (is_valid()) {
-        std::cout << "Vector content: ";
-        const HLM::Vector<T>& temp = *this;
+        std::cout << "SharedVector content: ";
+        const HLM::SharedVector<T>& temp = *this;
         for (size_t i = 0; i < size(); ++i) {
             std::cout << (temp[i]) << " ";
         }
