@@ -131,9 +131,6 @@ const size_t HLM::Vector<T>::data_id() const
     return m_data_->UUID;
 }
 
-
-
-
 template <typename T>
 HLM::Vector<T>::Vector() : m_data_(new Data()) {}
 
@@ -618,15 +615,15 @@ void HLM::Vector<T>::swap(const Vector& externalVector) {
 
 template <typename T>
 void HLM::Vector<T>::swap(const std::vector<T>& externalVector) {
-    std::vector<T> temp = std::move(*(this->m_data_->vector));
-    this->m_data_->vector = std::move(externalVector.m_data_->vector);
+    std::vector<T> temp    = std::move(*(this->m_data_->vector));
+    this->m_data_->vector  = std::move(externalVector.m_data_->vector);
     externalVector.m_data_ = std::move(temp);
 }
 
 template <typename T>
 void HLM::Vector<T>::swap(const std::vector<T>&& externalVector) {
-    std::vector<T> temp = std::move(*(this->m_data_->vector));
-    this->m_data_->vector = std::move(externalVector.m_data_->vector);
+    std::vector<T> temp    = std::move(*(this->m_data_->vector));
+    this->m_data_->vector  = std::move(externalVector.m_data_->vector);
     externalVector.m_data_ = std::move(temp);
 }
 
@@ -640,8 +637,6 @@ void HLM::Vector<T>::display() const {
             std::cout << (temp[i]) << " ";
         }
         std::cout << "\n";
-    } else {
-        std::cout << "Vector is null or released." << "\n";
-    }
+    } 
 }
 #endif
