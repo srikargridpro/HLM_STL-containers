@@ -27,15 +27,15 @@ public:
     virtual ~BroadcastFunctor() = default;
 };
 
-/// @brief class HLM::Vector
+/// @brief class HLM::SharedVector
 /// A safe vector container to prevent dangling references or pointers
 /// Never exposes the data pointer or reference outside 
 template <typename T>
-class Vector {
+class SharedVector {
 private:
     /// @brief struct Data
     // Data struct is a simple way to create & manage the vector container
-    // Vector Will never expose the pointer or even a reference externaly 
+    // SharedVector Will never expose the pointer or even a reference externaly 
     // Caution : Not meant for external use
     struct Data {
         static size_t& GlobalCount() {
@@ -98,11 +98,11 @@ public:
     #define HLM_MOVE 1
     #define HLM_COPY 0
 
-    inline Vector();
-    inline Vector(const std::vector<T>&& externalVector, const bool& move_semantic = HLM_MOVE);
-    inline Vector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE);
-    inline Vector(const Vector<T>& externalVector, const bool& move_semantic = HLM_MOVE);
-    inline ~Vector();
+    inline SharedVector();
+    inline SharedVector(const std::vector<T>&& externalVector, const bool& move_semantic = HLM_MOVE);
+    inline SharedVector(const std::vector<T>& externalVector, const bool& move_semantic = HLM_MOVE);
+    inline SharedVector(const SharedVector<T>& externalVector, const bool& move_semantic = HLM_MOVE);
+    inline ~SharedVector();
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -110,16 +110,16 @@ public:
 ////////////////////////////////////////////////////////////////////////////////////
 
     // Assignment operator from external vector using move semantics
-    inline const Vector& operator=(const std::vector<T>&& externalVector);
-    inline const Vector& operator=(const std::vector<T>& externalVector);
-    inline const Vector& operator=(const Vector<T>& externalVector);
+    inline const SharedVector& operator=(const std::vector<T>&& externalVector);
+    inline const SharedVector& operator=(const std::vector<T>& externalVector);
+    inline const SharedVector& operator=(const SharedVector<T>& externalVector);
 
     // Equality operator
-    inline bool operator==(const Vector& other) const;
+    inline bool operator==(const SharedVector& other) const;
     // Inequality operator    
-    inline bool operator!=(const Vector& other) const;
+    inline bool operator!=(const SharedVector& other) const;
     // Overload + operator for concatenation
-    inline Vector operator+(const Vector& other) const;
+    inline SharedVector operator+(const SharedVector& other) const;
     // Conversion operator to std::vector<T>
     // Pass a Copy to external vec if the data is valid 
     inline operator std::vector<T>() const;
@@ -156,7 +156,7 @@ public:
     inline void resize(const size_t& value = 0);
     inline void shrink_to_fit(const T& value);
     // insert an another vector to the front of this vector
-    inline void insert(const Vector& other) const;
+    inline void insert(const SharedVector& other) const;
     // Traditional std::vector::iterators
     inline typename std::vector<T>::iterator begin();
     inline typename std::vector<T>::const_iterator begin() const;
@@ -183,7 +183,7 @@ public:
     inline T& find(const T& value);
     inline const T& find(const T& value) const;
     // Swap external vector with internal uisng move semantics
-    inline void swap(const Vector& externalVector);
+    inline void swap(const SharedVector& externalVector);
     inline void swap(const std::vector<T>& externalVector);
     inline void swap(const std::vector<T>&& externalVector);
     // Display the vector content
