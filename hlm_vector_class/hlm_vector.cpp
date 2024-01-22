@@ -15,7 +15,7 @@ inline HELIUM_API::SharedVector<T>::Data::Data() : vector(new std::vector<T>()),
 }
 
 template <typename T>
-inline HELIUM_API::SharedVector<T>::Data::Data(const std::vector<T>& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)
+inline HELIUM_API::SharedVector<T>::Data::Data(const std::vector<T>& externalVector) : vector(new std::vector<T>((externalVector))), count(1)
 {
     std::atexit(Data::checkGlobalCount);
     UUID = (++GlobalCount());
@@ -25,7 +25,7 @@ inline HELIUM_API::SharedVector<T>::Data::Data(const std::vector<T>& externalVec
 }
 
 template <typename T>
-inline HELIUM_API::SharedVector<T>::Data::Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>(std::move(externalVector))), count(1)
+inline HELIUM_API::SharedVector<T>::Data::Data(const std::vector<T>&& externalVector) : vector(new std::vector<T>((externalVector))), count(1)
 {
     std::atexit(Data::checkGlobalCount);
     UUID = (++GlobalCount());
@@ -53,10 +53,14 @@ inline void HELIUM_API::SharedVector<T>::delete_vector() {
                 if (m_data_->vector != nullptr)
                     delete m_data_->vector;
             }
-            m_data_->vector = nullptr;
+        else
+           {
+             throw std::runtime_error("Deleting an invalid std::vector Pointer");  
+           }    
+           m_data_->vector = nullptr;
         }
     } catch (...) {
-        throw std::runtime_error("Deleting an invalid std::vector Pointer");
+        
     }
 }
 
