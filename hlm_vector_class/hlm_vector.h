@@ -192,7 +192,6 @@ public:
     // Swap external vector with internal uisng move semantics
     inline void swap(const SharedVector&    externalVector);
     inline void swap(const std::vector<T>&  externalVector);
-    inline void swap(const std::vector<T>&& externalVector);
     
     // Display the vector content
     inline void display() const;
