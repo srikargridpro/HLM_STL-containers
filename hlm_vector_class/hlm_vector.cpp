@@ -622,13 +622,6 @@ inline void HELIUM_API::SharedVector<T>::swap(const std::vector<T>& externalVect
     externalVector.m_data_ = std::move(temp);
 }
 
-template <typename T>
-inline void HELIUM_API::SharedVector<T>::swap(const std::vector<T>&& externalVector) {
-    std::vector<T> temp    = std::move(*(this->m_data_->vector));
-    this->m_data_->vector  = std::move(externalVector.m_data_->vector);
-    externalVector.m_data_ = std::move(temp);
-}
-
 // Display the vector content
 template <typename T>
 inline void HELIUM_API::SharedVector<T>::display() const {
