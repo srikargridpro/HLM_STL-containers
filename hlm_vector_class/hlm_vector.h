@@ -5,6 +5,7 @@
 #include <vector>
 #include <algorithm>
 #include <stdexcept>
+#include <atomic>
 #ifdef HLM_OMP_PARALLEL
 #include <omp.h>
 #endif
@@ -42,7 +43,7 @@ private:
     // Caution : Not meant for external use
     struct Data {
         static size_t& GlobalCount() {
-            static size_t global_count = 0;
+            static std::atomic<size_t> global_count = 0;
             return global_count;
         }
 
@@ -53,7 +54,7 @@ private:
         }
         // Caution : Not meant for external use
         std::vector<T>* vector;
-        size_t count;
+        std::atomic<size_t> count;
         size_t UUID;
 
         inline Data();
